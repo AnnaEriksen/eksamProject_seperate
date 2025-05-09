@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,11 +58,14 @@ public class Controller {
     public static Whiskyserie createWhiskyserie(String serieNavn, LocalDate dato) {
         if (serieNavn == null) {
             throw new IllegalArgumentException("Du skal give din whisky serie et navn");
-        } else {
-            Whiskyserie whiskyserie = new Whiskyserie(serieNavn, dato);
-            Storage.addWhiskyserie(whiskyserie);
-            return whiskyserie;
         }
+        if (dato == null) { //TODO har tilføjet nulltjekker på dato
+            throw new IllegalArgumentException("Du skal vælge en dato for din whiskyserie");
+        }
+
+        Whiskyserie whiskyserie = new Whiskyserie(serieNavn, dato);
+        Storage.addWhiskyserie(whiskyserie);
+        return whiskyserie;
     }
 
     public static DestillatMængde createDestillatMængde(double mængde, Whiskyserie whiskyserie, Destillat destillat) {
@@ -415,7 +419,7 @@ public class Controller {
     public static List<Whiskyserie> whiskeySøgning(double minAlkoholProcent, double maxAlkoholProcent,
                                                    double minMængde, double maxMængde,
                                                    int minAntalFlakser, int maxAntalFlasker, int minAlder, int maxAlder,
-                                                   List<WhiskyType> whiskeyTyper ) {
+                                                   List<WhiskyType> whiskeyTyper) {
 
         List<Whiskyserie> whiskyserier = Controller.getWhiskyserie();
         LocalDateTime nu = LocalDateTime.now();
@@ -425,8 +429,9 @@ public class Controller {
                 .filter(w -> w.getStørrelse() >= minMængde && w.getStørrelse() <= maxMængde)
                 .filter(w -> w.getAntalFlasker() >= minAntalFlakser && w.getAntalFlasker() <= maxAntalFlasker)
                 .filter(w -> {
-                    long alder = ChronoUnit.YEARS.between(w.getDato(),nu);
-                    return alder >= minAlder && alder <= maxAlder; })
+                    long alder = ChronoUnit.YEARS.between(w.getDato(), nu);
+                    return alder >= minAlder && alder <= maxAlder;
+                })
                 .filter(w -> whiskeyTyper == null || whiskeyTyper.isEmpty() || whiskeyTyper.contains(w.getWhiskyType()))
                 .collect(Collectors.toList());
 

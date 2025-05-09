@@ -100,9 +100,7 @@ public class Whiskyserie {
         Fad = fad;
     }
 
-    public void setDato(LocalDate dato) {
-        this.dato = dato;
-    }
+   //TODO fjernet setDato
 
     public LocalDate getDato() {
         return dato;
